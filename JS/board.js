@@ -48,54 +48,51 @@ function writePosts(mockPostArr) {
         .join("");
     return mockPostTags;
 }
-function appendPosts(mockPostArr) {
+function appendPosts(title, content) {
     const example = document.querySelector("#example-article");
-    let postArticleArr = [];
     if (example !== null) {
         example.remove();
     }
-    for (const post of mockPostArr) {
-        let $postArticle = document.createElement("article");
-        $postArticle.className = "board-card";
-        $postArticle.addEventListener("click", (event) => {
-            showDetail(event, post);
-        });
 
-        let $postH3 = document.createElement("h3");
-        $postH3.className = "flex-center";
+    let $postArticle = document.createElement("article");
+    $postArticle.className = "board-card";
 
-        let $postTitle = document.createElement("p");
-        $postTitle.className = "post-title";
-        $postTitle.innerText = `${post.title}`;
+    let $postH3 = document.createElement("h3");
+    $postH3.className = "flex-center";
 
-        let $postDeleteBtn = document.createElement("button");
-        $postDeleteBtn.innerText = "삭제";
-        $postDeleteBtn.addEventListener("click", deleteArticle);
+    let $postTitle = document.createElement("p");
+    $postTitle.className = "post-title";
+    $postTitle.innerText = `${title}`;
 
-        let $postContent = document.createElement("div");
-        $postContent.className = "flex-center";
-        $postContent.innerText = post.content;
+    let $postDeleteBtn = document.createElement("button");
+    $postDeleteBtn.innerText = "삭제";
+    $postDeleteBtn.addEventListener("click", deleteArticle);
 
-        $postArticle.appendChild($postH3);
-        $postH3.append($postTitle, $postDeleteBtn);
-        $postArticle.appendChild($postContent);
-        postArticleArr.push($postArticle);
-    }
-    return postArticleArr;
+    let $postContent = document.createElement("div");
+    $postContent.className = "flex-center";
+    $postContent.innerText = content;
+
+    $postArticle.appendChild($postH3);
+    $postH3.append($postTitle, $postDeleteBtn);
+    $postArticle.appendChild($postContent);
+    $postArticle.addEventListener("click", (event) => {
+        showDetail(event, title, content);
+    });
+    $boardList.appendChild($postArticle);
 }
 function renderPost(post) {}
-function showDetail(event, post) {
+function showDetail(event, title, content) {
     event.stopPropagation();
     const boardDetail = document.querySelector(".board-detail");
     const target = event.currentTarget;
     for (const child of target.children) {
         console.log(child.tagName);
         if (child.tagName === "H3") {
-            boardDetail.querySelector("p").innerText = post.title;
+            boardDetail.querySelector("p").innerText = title;
             continue;
         }
         if (child.tagName === "DIV") {
-            boardDetail.querySelector("div").innerText = post.content;
+            boardDetail.querySelector("div").innerText = content;
         }
     }
 }
@@ -105,15 +102,19 @@ function deleteArticle(event) {
     const article = target.parentNode.parentNode;
     article.remove();
 }
-function addPosts() {
-    const $inputTitle = document.querySelector(".title");
-    const $inputContent = document.querySelector(".content");
-}
+
 const mockPosts = generateMockPost(2); //배열
 console.log(mockPosts);
 
 $boardList.innerHTML = writePosts(mockPosts);
-for (const post of appendPosts(mockPosts)) {
-    $boardList.appendChild(post);
+
+$writeBtn.addEventListener("click", (e) => {
+    const $inputTitle = document.querySelector(".title").value;
+    const $inputContent = document.querySelector(".content").value;
+    appendPosts($inputTitle, $inputContent);
+});
+for (const post of mockPosts) {
+    const $inputTitle = post.title;
+    const $inputContent = post.content;
+    appendPosts($inputTitle, $inputContent);
 }
-$writeBtn.addEventListener("click", addPosts);
